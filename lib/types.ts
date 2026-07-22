@@ -29,6 +29,7 @@ export interface TradeSignal {
   confidence: number;
   trend: TrendDirection;
   indicators: Record<string, unknown>;
+  status: "RUNNING" | "WIN" | "LOSS" | "N/A";
   generated_at: string;
   ai_analysis?: AIAnalysis;
   updated_at?: string;

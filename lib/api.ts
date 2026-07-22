@@ -139,3 +139,36 @@ export const subscriptionApi = {
 export const profileApi = {
   get: () => authApi.me(),
 };
+
+// ---------------- Payment API ----------------
+export interface PaymentRecord {
+  id: string;
+  plan_id: string;
+  plan_name: string;
+  amount_inr: number;
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  status: "success" | "failed";
+  created_at: string;
+}
+
+export const paymentApi = {
+  getHistory: () => request<PaymentRecord[]>("/subscription/payment-history"),
+};
+
+// ---------------- Notification API ----------------
+export interface NotificationRecord {
+  id: string;
+  uid: string | null;
+  type: "new_signal" | "payment_success" | "expiry_reminder";
+  title: string;
+  body: string;
+  instrument?: string;
+  read: boolean;
+  created_at: string;
+}
+
+export const notificationApi = {
+  getAll: () => request<NotificationRecord[]>("/notifications"),
+  markRead: (id: string) => request<{ status: string }>(`/notifications/${id}/read`, { method: "POST" }),
+};
