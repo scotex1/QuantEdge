@@ -5,8 +5,8 @@ import { Search } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { SignalCard } from "@/components/SignalCard";
 import { LoadingGrid, ErrorState, EmptyState, UpgradePrompt } from "@/components/States";
-import { Badge } from "@/components/ui";
 import { useHistory } from "@/lib/hooks";
+import { isTradeSignal } from "@/lib/types";
 
 const STATUS_FILTERS = ["All", "Running", "Win", "Loss"] as const;
 
@@ -18,10 +18,9 @@ export default function SignalHistoryPage() {
   const filtered = useMemo(() => {
     return history.filter((s) => {
       const matchesQuery = s.instrument.toLowerCase().includes(query.toLowerCase());
-      // Outcome tracking (Win/Loss) isn't computed by the backend yet — every
-      // historical signal is treated as "Running" until that's added.
-      const matchesStatus = status === "All" || status === "Running";
-      return matchesQuery && matchesStatus;
+      if (status === "All") return matchesQuery;
+      if (!isTradeSignal(s)) return false; // index trend signals have no Win/Loss status
+      return matchesQuery && s.status === status.toUpperCase();
     });
   }, [history, query, status]);
 
@@ -47,9 +46,7 @@ export default function SignalHistoryPage() {
             <button
               key={s}
               onClick={() => setStatus(s)}
-              disabled={s === "Win" || s === "Loss"}
-              title={s === "Win" || s === "Loss" ? "Outcome tracking coming soon" : undefined}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                 status === s ? "bg-signal/15 text-signal" : "text-ink-500 hover:text-ink-100"
               }`}
             >
@@ -66,17 +63,11 @@ export default function SignalHistoryPage() {
       ) : filtered.length === 0 ? (
         <EmptyState title="No history yet" body="Signals will appear here as the engines run." />
       ) : (
-        <>
-          <p className="mb-4 flex items-center gap-2 text-xs text-ink-700">
-            <Badge tone="neutral">Note</Badge>
-            Win/Loss outcome tracking isn't wired up yet — all past signals show as Running.
-          </p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((s, i) => (
-              <SignalCard key={`${s.instrument}-${s.generated_at}-${i}`} signal={s} />
-            ))}
-          </div>
-        </>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((s, i) => (
+            <SignalCard key={`${s.instrument}-${s.generated_at}-${i}`} signal={s} />
+          ))}
+        </div>
       )}
     </div>
   );
