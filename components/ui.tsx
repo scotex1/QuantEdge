@@ -63,9 +63,19 @@ export function Badge({
   );
 }
 
-export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function Card({
+  children,
+  className = "",
+  onClick,
+}: {
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
-    <div className={`rounded-lg border border-base-700 bg-base-850 ${className}`}>{children}</div>
+    <div onClick={onClick} className={`rounded-lg border border-base-700 bg-base-850 ${className}`}>
+      {children}
+    </div>
   );
 }
 

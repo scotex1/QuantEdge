@@ -38,9 +38,20 @@ export function SignalCard({ signal }: { signal: AnySignal }) {
           <p className="font-display text-lg font-semibold text-ink-100">{signal.instrument}</p>
           <p className="text-xs uppercase tracking-wide text-ink-500">{signal.asset_type}</p>
         </div>
-        <Badge tone={tone as "bull" | "bear" | "neutral"}>
-          {trade ? signal.signal : signal.trend}
-        </Badge>
+        <div className="flex flex-col items-end gap-1.5">
+          <Badge tone={tone as "bull" | "bear" | "neutral"}>
+            {trade ? signal.signal : signal.trend}
+          </Badge>
+          {trade && signal.status && signal.status !== "N/A" && (
+            <Badge
+              tone={
+                signal.status === "WIN" ? "bull" : signal.status === "LOSS" ? "bear" : "signal"
+              }
+            >
+              {signal.status}
+            </Badge>
+          )}
+        </div>
       </div>
 
       {trade && signal.signal !== "NO_TRADE" ? (
