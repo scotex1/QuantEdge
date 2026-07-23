@@ -10,7 +10,7 @@ import type {
 // This is the ONLY base URL the frontend ever talks to. All market data
 // (Twelve Data, CoinGecko, Angel One) is fetched server-side by the backend —
 // the frontend never calls those APIs directly.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 const API_V1 = `${API_BASE}/api/v1`;
 
 const ACCESS_TOKEN_COOKIE = "ts_access_token";
